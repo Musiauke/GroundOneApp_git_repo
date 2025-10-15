@@ -1,86 +1,131 @@
 using backend.DTOs.Vehicles;
 using backend.Models;
 using backend.Repository;
-// implementation of menu , the recipe 
 
-
-// it is written based on IVehicleService
-
-
-// but it uses IVehicleRepository to get data from database
 namespace backend.Services
 {
     public class VehicleService : IVehicleService
-    // implementation of its own interface IVehicleService
     {
-
-        // says that it will use IVehicleRepository to get data
         private readonly IVehicleRepository _vehicleRepository;
 
-        // Dependency Injection (it gets repository thanks to constructor injection)
         public VehicleService(IVehicleRepository vehicleRepository)
         {
             _vehicleRepository = vehicleRepository;
         }
 
-        public async Task<List<VehicleResponseDto>> GetAllVehicleAsyncs()
+        public async Task<List<VehicleResponseDto>> GetAllVehiclesAsync()
         {
-            // take it from repository
-            var vehicles = await _vehicleRepository.GetAllAsyncs();
-            // map it to DTO
-            return vehicles.Select(v = new VehicleResponseDto
+            var vehicles = await _vehicleRepository.GetAllAsync();
+            return vehicles.Select(v => new VehicleResponseDto
             {
                 Id = v.Id,
-                Brand = v.Brand,
-                Model = v.Model,
-                Year = v.Year,
-                LicensePlate = v.LicensePlate,
-                PricePerDay = v.PricePerDay,
-                IsAvailable = v.IsAvailable
+                Name = v.Name,
+                Type = v.Type,
+                Cryptonym = v.Cryptonym,
+                RegistrationNumber = v.RegistrationNumber,
+                YearOfManufacture = v.YearOfManufacture,
+                Status = v.Status.ToString(),
+                NextInspection = v.NextInspection
             }).ToList();
-            // that's creating  new object DTO in memory, to nicely pack data from the entity
         }
 
-
-        public async Task<VehicleDetailsDto?> GetVehicleByIdAsync(int id);
+        public async Task<VehicleDetailsDto?> GetVehicleByIdAsync(int id)
         {
             var vehicle = await _vehicleRepository.GetByIdAsync(id);
 
             if (vehicle == null)
                 return null;
 
+            // mapping to VehicleDetailsDto
+            
+            return new VehicleDetailsDto
+            {
+                Id = vehicle.Id,
+                Name = vehicle.Name,
+                Type = vehicle.Type,
+                Cryptonym = vehicle.Cryptonym,
+                RegistrationNumber = vehicle.RegistrationNumber,
+                YearOfManufacture = vehicle.YearOfManufacture,
+                Status = vehicle.Status.ToString(),
+                NextInspection = vehicle.NextInspection
+                // add accordingly as in VehicleDetailsDto
+            };
         }
 
-        public async Task<VehicleDetailsDto?> CreateVehicleAsync(int id);
+        public async Task<VehicleDetailsDto?> CreateVehicleAsync(CreateVehicleDto createDto)
+        {
+            // Tworzenie nowego pojazdu na podstawie DTO
+            var vehicle = new Vehicle
+            {
+                Id = createDto.Id,
+                Name = createDto.Name,
+                Type = createDto.Type,
+                Cryptonym = createDto.Cryptonym,
+                RegistrationNumber = createDto.RegistrationNumber,
+                YearOfManufacture = createDto.YearOfManufacture,
+                Status = createDto.Status,
+                NextInspection = createDto.NextInspection
+            };
+
+            var createdVehicle = await _vehicleRepository.CreateAsync(vehicle);
+            
+            // Mapowanie zwróconego pojazdu na VehicleDetailsDto
+            return new VehicleDetailsDto
+            {
+                Id = createdVehicle.Id,
+                Name = createdVehicle.Name,
+                Type = createdVehicle.Type,
+                Cryptonym = createdVehicle.Cryptonym,
+                RegistrationNumber = createdVehicle.RegistrationNumber,
+                YearOfManufacture = createdVehicle.YearOfManufacture,
+                Status = createdVehicle.Status.ToString(),
+                NextInspection = createdVehicle.NextInspection
+            };
+        }
+
+        public async Task<VehicleDetailsDto?> UpdateVehicleAsync(int id, UpdateVehicleDto updateDto)
+        {
+            var existingVehicle = await _vehicleRepository.GetByIdAsync(id);
+
+            if (existingVehicle == null)
+                return null;
+
+            // Aktualizacja właściwości
+            existingVehicle.Name = updateDto.Name;
+            existingVehicle.Type = updateDto.Type;
+            existingVehicle.Cryptonym = updateDto.Cryptonym;
+            existingVehicle.RegistrationNumber = updateDto.RegistrationNumber;
+            existingVehicle.YearOfManufacture = updateDto.YearOfManufacture;
+            existingVehicle.NextInspection = updateDto.NextInspection;
+            // hard one
+            existingVehicle.Status = Enum.TryParse<VehicleStatus>(updateDto.Status, true, out var parsedStatus)
+                ? parsedStatus
+                : existingVehicle.Status;
+
+            await _vehicleRepository.UpdateAsync(existingVehicle);
+
+            return new VehicleDetailsDto
+            {
+                Id = existingVehicle.Id,
+                Name = existingVehicle.Name,
+                Type = existingVehicle.Type,
+                Cryptonym = existingVehicle.Cryptonym,
+                RegistrationNumber = existingVehicle.RegistrationNumber,
+                YearOfManufacture = existingVehicle.YearOfManufacture,
+                Status = existingVehicle.Status.ToString(),
+                NextInspection = existingVehicle.NextInspection
+            };
+        }
+
+        public async Task<bool> DeleteVehicleAsync(int id)
         {
             var vehicle = await _vehicleRepository.GetByIdAsync(id);
 
             if (vehicle == null)
-                return null;
+                return false;
 
+            await _vehicleRepository.DeleteAsync(id);
+            return true;
         }
-
-        public async Task<VehicleDetailsDto?> UpdateVehicleAsync(int id);
-        {
-            var vehicle = await _vehicleRepository.GetByIdAsync(id);
-
-            if (vehicle == null)
-                return null;
-
-        }
-
-
-public async Task<VehicleDetailsDto?> DeleteVehicleAsync(int id);
-        {
-            var vehicle = await _vehicleRepository.GetByIdAsync(id);
-
-            if (vehicle == null)
-                return null;
-
-        }
-
-
-}
     }
 }
-

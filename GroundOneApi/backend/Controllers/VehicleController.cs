@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using backend.Services;
-using backend.DTOs.Vehicle;
+using backend.DTOs.Vehicles;
 
 namespace backend.Controllers
 {
@@ -31,7 +31,7 @@ namespace backend.Controllers
         public async Task<ActionResult<VehicleDetailsDto>> GetById(int id)
         {
             // here theres probably action from services
-            var vehicle = await _service.GetVehicleByIdAsync(); // wheres the definition?
+            var vehicle = await _service.GetVehicleByIdAsync(id);
             if (vehicle == null)
                 return NotFound(new { message = $"Vehicle with ID {id} was not found" });
 
@@ -95,7 +95,7 @@ namespace backend.Controllers
 
 //     await _vehicleService.UpdateAsync(vehicle);
 //     return NoContent();
-}
+
 
 
             /// </summary>

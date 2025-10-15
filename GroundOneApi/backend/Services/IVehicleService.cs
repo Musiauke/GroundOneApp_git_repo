@@ -2,7 +2,7 @@ namespace backend.Services;
 //interface is like a menu
 // u don't know how the food is prepared, you just know what you can order
 
-using backend.DTOs.Vehicle;
+using backend.DTOs.Vehicles;
 
 public interface IVehicleService
 {

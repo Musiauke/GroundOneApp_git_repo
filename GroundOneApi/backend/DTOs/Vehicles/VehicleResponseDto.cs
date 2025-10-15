@@ -16,5 +16,6 @@ namespace backend.DTOs.Vehicles
         public string Status { get; set; } = string.Empty;
         public int YearOfManufacture { get; set; }
         // no details, light object to list
+        public DateTime? NextInspection { get; set; }
     }
 }

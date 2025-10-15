@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 public class VehicleRepository : IVehicleRepository
 {
-    private readonly ApplicationDbContext _context;
+    private readonly AppDbContext _context;
     
     // Dependency Injection - we add database context
-    public VehicleRepository(ApplicationDbContext context)
+    public VehicleRepository(AppDbContext context)
     {
         _context = context;
     }
