@@ -9,14 +9,14 @@ namespace backend.DTOs.Vehicles
     {
         // basic info
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Cryptonym { get; set; }
-        public string RegistrationNumber { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Cryptonym { get; set; } = string.Empty;
+        public string RegistrationNumber { get; set; } = string.Empty;
         public int YearOfManufacture { get; set; }
 
         // statuses and dates
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public DateTime? LastInspection { get; set; }
         public DateTime? NextInspection { get; set; }
         public string? Notes { get; set; }

@@ -18,7 +18,7 @@ namespace backend.Models
         public DateTime? NextInspection { get; set; } = null;
         public ItemStatus Status { get; set; } = ItemStatus.Available;
         // is in available, needs enum 
-        public string? Notes { get; set; } = string.Empty;
+        public string? Notes { get; set; } = string.Empty; // decide between notes and description or both
 
         //  Foreign key to Compartment, why it needs and other dont?
         public int? CompartmentId { get; set; }
