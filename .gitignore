@@ -1,0 +1,36 @@
+# --- .NET standard ---
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- Entity Framework / SQLite ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Konfiguracje lokalne ---
+appsettings.Development.json
+appsettings.Local.json
+*.env
+
+# --- System / IDE ---
+.vscode/
+.idea/
+*.DS_Store
+
+# --- Test output ---
+TestResults/
+*.trx
+coverage/
+
+# --- Logs ---
+*.log
+
+# --- Backup / temporary files ---
+*.tmp
+*.bak
+*.swp
+*.orig
