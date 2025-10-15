@@ -1,0 +1,5 @@
+Data Transfer Objects (DTOs).
+
+Lightweight classes used to transfer data between layers (e.g., Service → Controller → API).
+
+They hide internal details of Models and prevent exposing sensitive information.

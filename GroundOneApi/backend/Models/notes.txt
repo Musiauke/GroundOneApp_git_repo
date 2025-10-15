@@ -1,0 +1,3 @@
+Domain entities mapped to the database.
+
+Represent the core business objects (tables in DB when using EF Core). Usually contain all fields, including internal or sensitive ones.

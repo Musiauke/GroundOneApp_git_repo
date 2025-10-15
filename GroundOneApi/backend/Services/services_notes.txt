@@ -1,0 +1,8 @@
+Business logic layer.
+<Kitchen chef >
+
+•	Interfaces/ → define contracts (e.g., IVehicleService) describing available operations.
+<the menu>
+
+•	Implementations/ → classes (e.g., VehicleService) that implement business rules, validation, mapping Models ↔ DTOs, and orchestrate data between repositories.
+<the recipe and full preparing of a meal>

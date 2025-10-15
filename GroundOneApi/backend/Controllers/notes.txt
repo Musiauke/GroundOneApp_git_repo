@@ -1,0 +1,9 @@
+Responsible for handling HTTP requests and responses. 
+	•	GET → retrieve data
+	•	POST → send new data
+	•	PUT → update existing data
+	•	DELETE → remove data
+
+Controllers act as the entry point of the application. 
+
+They call Services to execute business logic and return results (usually as JSON via DTOs).

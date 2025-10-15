@@ -1,0 +1,10 @@
+Storekeeper / warehouseman
+
+•	Interfaces/ → contain contracts (e.g., IVehicleRepository) that define CRUD operations. 
+    
+    Like storage book in restaurant.
+
+
+•	Implementations/ → concrete classes (e.g., VehicleRepository) that interact with the database through EF. 
+    
+    It's bringing something out of the storage.
