@@ -17,5 +17,7 @@ namespace backend.DTOs.Vehicles
         public int YearOfManufacture { get; set; }
         // no details, light object to list
         public DateTime? NextInspection { get; set; }
+        public DateTime? LastInspection { get; set; }
+        public string? Notes { get; set; }
     }
 }

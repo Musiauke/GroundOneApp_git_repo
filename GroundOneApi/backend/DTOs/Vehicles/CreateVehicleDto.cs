@@ -32,6 +32,8 @@ namespace backend.DTOs.Vehicles
 
         public DateTime? NextInspection { get; set; }
 
+        // Status will default to "Available" in the backend, but allow setting it on creation if needed
+
         [StringLength(500, ErrorMessage = "Notes cannot be longer than 500 characters")]
         public string? Notes { get; set; }
 

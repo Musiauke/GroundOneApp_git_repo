@@ -49,7 +49,7 @@ namespace backend.Controllers
             try
             {
                 var vehicle = await _service.CreateVehicleAsync(dto);
-                return CreatedAction(nameof(GetById), new { id = vehicle.Id },
+                return CreatedAtAction(nameof(GetById), new { id = vehicle.Id },
                 vehicle);
             }
             catch (ArgumentException ex)

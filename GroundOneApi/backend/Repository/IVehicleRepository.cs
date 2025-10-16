@@ -12,6 +12,6 @@ public interface IVehicleRepository
     Task<Vehicle> AddAsync(Vehicle vehicle);
     Task UpdateAsync(Vehicle vehicle);
     Task DeleteAsync(int id);
-    Task<bool> ExistsAsync(int id);
+    Task<bool> ExistsAsync(int id);    
 }
 // its promise for service
