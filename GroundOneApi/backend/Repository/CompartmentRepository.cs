@@ -38,17 +38,17 @@ public class CompartmentRepository : ICompartmentRepository
     }
 
     public async Task<Compartment> AddAsync(Compartment compartment)
-    {. // a.k.a. Create
+    { // a.k.a. Create
         await _context.Compartments.AddAsync(compartment);
         await _context.SaveChangesAsync();
         return compartment;
     }
 
-    public async Task UpdateAsync(Compartment compartment)
+    public async Task<Compartment> UpdateAsync(Compartment compartment)
     {
         _context.Compartments.Update(compartment);
         await _context.SaveChangesAsync();
-        // return compartment; // cannot be written this way its async
+        return compartment;
     }
 
     public async Task<bool> DeleteAsync(int id)
