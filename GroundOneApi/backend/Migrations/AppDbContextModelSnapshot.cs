@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using backend;
+using backend.Data;
 
 #nullable disable
 
@@ -146,7 +146,8 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.Compartment", "Compartment")
                         .WithMany("Items")
-                        .HasForeignKey("CompartmentId");
+                        .HasForeignKey("CompartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Compartment");
                 });

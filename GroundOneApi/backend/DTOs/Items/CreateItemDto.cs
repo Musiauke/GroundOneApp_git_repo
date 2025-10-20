@@ -1,11 +1,17 @@
+using backend.Models;
+
+namespace backend.DTOs.Items;
+
 public class CreateItemDto
 {
     public string Name { get; set; } = string.Empty;
+    public string Manufacturer { get; set; } = string.Empty;
+    public int YearOfManufacture { get; set; } = DateTime.Now.Year;
     public string? Notes { get; set; }
-    public string Category { get; set; } = string.Empty;
+    public EquipmentCategory Category { get; set; }
     public int Quantity { get; set; } = 1;
-    public string Status { get; set; } = "Available";
-    public DateTime? LastInspectionDate { get; set; }
-    public DateTime? NextInspectionDate { get; set; }
+    public ItemStatus Status { get; set; }
+    public DateTime? LastInspection { get; set; }
+    public DateTime? NextInspection { get; set; }
     public int? CompartmentId { get; set; }
 }

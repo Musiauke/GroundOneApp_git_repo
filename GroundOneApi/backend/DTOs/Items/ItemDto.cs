@@ -1,13 +1,15 @@
-namespace backend.DTOs.Tiems;
+using backend.Models;
 
-public class ItemSummaryDto
+namespace backend.DTOs.Items;
+
+public class ItemDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Notes { get; set; } = string.Empty;
-    public string Category { get; set; } = string.Empty;
+    public EquipmentCategory Category { get; set; }
     public int Quantity { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public ItemStatus Status { get; set; } = ItemStatus.Available;
     public DateTime? LastInspectionDate { get; set; }
     public DateTime? NextInspectionDate { get; set; }
     // Compartment info

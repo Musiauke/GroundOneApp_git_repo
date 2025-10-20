@@ -3,6 +3,7 @@
 namespace backend.Repository;
 using backend.Models;
 
+
 public interface ICompartmentRepository
 {
 

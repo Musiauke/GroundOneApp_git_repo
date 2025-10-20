@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using backend;
+using backend.Data;
 
 #nullable disable
 
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250929120400_CryptonymsAdded")]
-    partial class CryptonymsAdded
+    [Migration("20251020085819_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,7 +149,8 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.Compartment", "Compartment")
                         .WithMany("Items")
-                        .HasForeignKey("CompartmentId");
+                        .HasForeignKey("CompartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Compartment");
                 });

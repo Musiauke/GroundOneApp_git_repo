@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using backend.Models;
+using backend.DTOs.Compartment;
+using backend.Services;
 
 namespace backend.Controllers
 {
@@ -8,41 +8,46 @@ namespace backend.Controllers
     [Route("api/[controller]")]
     public class CompartmentController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ICompartmentService _service;
 
-        public CompartmentController(AppDbContext context)
+        public CompartmentController(ICompartmentService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Compartment>>> GetCompartments()
+        public async Task<ActionResult<IEnumerable<CompartmentDto>>> GetCompartments()
         {
-            return await _context.Compartments.Include(c => c.Items).ToListAsync();
+            var list = await _service.GetAllAsync();
+            return Ok(list);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Compartment>> GetCompartment(int id)
+        public async Task<ActionResult<CompartmentDetailsDto>> GetCompartment(int id)
         {
-            var compartment = await _context.Compartments
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (compartment == null)
-            {
-                return NotFound();
-            }
-
-            return compartment;
+            var dto = await _service.GetByIdAsync(id);
+            return dto == null ? NotFound() : Ok(dto);
         }
 
-        [HttpPost] // actually not neeeded cuz u will have fixed list of it, but maybe if u want really custom its ok, dunno
-        public async Task<ActionResult<Compartment>> CreateCompartment(Compartment compartment)
+        [HttpPost]
+        public async Task<IActionResult> CreateCompartment(CreateCompartmentDto dto)
         {
-            _context.Compartments.Add(compartment);
-            await _context.SaveChangesAsync();
+            var created = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetCompartment), new { id = created.Id }, created);
+        }
 
-            return CreatedAtAction(nameof(GetCompartment), new { id = compartment.Id }, compartment);
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CompartmentDto>> Update(int id, UpdateCompartmentDto dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            return updated == null ? NotFound() : Ok(updated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

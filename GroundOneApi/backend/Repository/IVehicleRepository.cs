@@ -1,8 +1,8 @@
-namespace backend.Repository;
 //interface is like a menu
 // u don't know how the food is prepared, you just know what you can order
 using backend.Models;
 
+namespace backend.Repository;
 /// Interface defining Vehicle operations on database
 public interface IVehicleRepository
 {
@@ -12,6 +12,6 @@ public interface IVehicleRepository
     Task<Vehicle> AddAsync(Vehicle vehicle);
     Task UpdateAsync(Vehicle vehicle);
     Task DeleteAsync(int id);
-    Task<bool> ExistsAsync(int id);    
+    Task<bool> ExistsAsync(int id);
 }
 // its promise for service

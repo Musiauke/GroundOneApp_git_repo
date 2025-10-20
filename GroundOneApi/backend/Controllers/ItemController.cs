@@ -1,49 +1,70 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using backend.Models;
+using backend.DTOs.Items;
+using backend.Services;
 
-namespace backend.Controllers 
+namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ItemsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IItemService _service;
 
-        public ItemsController(AppDbContext context)
+        public ItemsController(IItemService service)
         {
-            _context = context;
+            _service = service;  // ← Było "_context = context;" - ŹLE!
         }
-        // endopoint READ
+
+        // GET all items
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> GetItems()
         {
-            return await _context.Items.ToListAsync();
+            var items = await _service.GetAllItemsAsync();
+            return Ok(items);
         }
-        //endpoint READ by id
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Item>> GetItem(int id)
-        {
-            var item = await _context.Items.FindAsync(id);
 
+        // GET item by id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ItemDetailsDto>> GetItem(int id)
+        {
+            var item = await _service.GetItemByIdAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
-
-            return item;
+            return Ok(item);
         }
-        // endpoint CREATE
+
+        // CREATE item
         [HttpPost]
-        public async Task<ActionResult<Item>> PostItem(Item item)
+        public async Task<ActionResult<ItemDto>> PostItem(CreateItemDto dto)
         {
-            _context.Items.Add(item);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
+            var created = await _service.CreateItemAsync(dto);
+            return CreatedAtAction(nameof(GetItem), new { id = created.Id }, created);
         }
-        // endpoint UPDATE
 
-        //endpoint DELETE
+        // UPDATE item
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ItemDto>> PutItem(int id, UpdateItemDto dto)
+        {
+            var updated = await _service.UpdateItemAsync(id, dto);
+            if (updated == null)
+            {
+                return NotFound();
+            }
+            return Ok(updated);
+        }
+
+        // DELETE item
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var result = await _service.DeleteItemAsync(id);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
     }
 }

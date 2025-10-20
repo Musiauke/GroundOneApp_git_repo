@@ -19,6 +19,7 @@ namespace backend.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Type = table.Column<string>(type: "TEXT", nullable: false),
+                    Cryptonym = table.Column<string>(type: "TEXT", nullable: false),
                     RegistrationNumber = table.Column<string>(type: "TEXT", nullable: false),
                     YearOfManufacture = table.Column<int>(type: "INTEGER", nullable: false),
                     LastInspection = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -77,7 +78,8 @@ namespace backend.Migrations
                         name: "FK_Items_Compartments_CompartmentId",
                         column: x => x.CompartmentId,
                         principalTable: "Compartments",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
