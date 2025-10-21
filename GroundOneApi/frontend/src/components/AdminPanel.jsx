@@ -56,7 +56,7 @@ const theme = createTheme({
 });
 
 // Konfiguracja API
-const API_BASE_URL = 'http://localhost:5173/api'; // Zmień port na właściwy dla twojego backendu
+const API_BASE_URL = 'http://localhost:5049/api';
 
 // Funkcje API
 const api = {
@@ -93,12 +93,12 @@ const api = {
   
   // Items
   getItems: async () => {
-    const response = await fetch(`${API_BASE_URL}/item`);
+    const response = await fetch(`${API_BASE_URL}/Items`);
     if (!response.ok) throw new Error('Failed to fetch items');
     return response.json();
   },
   deleteItem: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/item/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/Items/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete item');
@@ -276,12 +276,7 @@ export default function AdminPanel() {
       {loading ? (
         <CircularProgress />
       ) : (
-        <Grid
-          container
-          spacing={3}
-          justifyContent="center"
-          sx={{ mt: 2, maxWidth: "1200px" }}
-        >
+        <Grid container spacing={3} sx={{ mt: 2, maxWidth: "1200px" }}>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
               <CardContent>
