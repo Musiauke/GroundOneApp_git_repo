@@ -38,8 +38,8 @@ export default function VehicleAddDialog({ open, onClose, onSave }) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography variant="h6" fontWeight={700}>Dodaj nowy pojazd</Typography>
+      <DialogTitle sx={{ pb: 1, fontWeight: 700 }}>
+        Dodaj nowy pojazd
       </DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
