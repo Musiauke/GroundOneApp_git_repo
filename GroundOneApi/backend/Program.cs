@@ -30,13 +30,13 @@ builder.Services.AddSwaggerGen();
 // CORS dla React
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact",
-        policy =>
+    options.AddPolicy("AllowFrontend",
+        builder =>
         {
-        policy.WithOrigins("http://localhost:5173")
-        .AllowAnyMethod()
-        .AllowAnyHeader();
-    });
+            builder.WithOrigins("http://localhost:5173") // port Vite frontend
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
@@ -61,7 +61,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowReact");
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
