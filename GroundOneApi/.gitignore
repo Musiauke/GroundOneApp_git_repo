@@ -15,6 +15,7 @@ frontend/.env.local
 
 # Visual Studio
 .vs/
+**/*.user
 
 # Tests
 GroundOneApi.Tests/bin/
@@ -24,5 +25,5 @@ GroundOneApi.Tests/obj/
 .DS_Store
 Thumbs.db
 
-# extra
-.vs/
+# Databases
+**/*.sqlite
