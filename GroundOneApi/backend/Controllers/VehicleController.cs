@@ -29,10 +29,10 @@ public class VehicleController : ControllerBase
     }
 
     /// <summary>
-    /// Gets list of all vehicles
+    /// Gets a list of all vehicles
     /// </summary>
-    /// <returns>List of vehicles with basic info</returns>
-    /// <response code="200">Returns list of vehicles</response>
+    /// <returns>List of vehicles with basic information</returns>
+    /// <response code="200">Returns the list of vehicles</response>
     /// <response code="500">Server error</response>
     [HttpGet]
     [ProducesResponseType(typeof(List<VehicleResponseDto>), StatusCodes.Status200OK)]
@@ -53,13 +53,13 @@ public class VehicleController : ControllerBase
     }
 
     /// <summary>
-    /// Pobiera szczegóły pojazdu o określonym ID
+    /// Gets details of a vehicle by its ID
     /// </summary>
-    /// <param name="id">ID pojazdu</param>
-    /// <returns>Szczegółowe informacje o pojeździe wraz z przedziałami i wyposażeniem</returns>
-    /// <response code="200">Zwraca pojazd</response>
-    /// <response code="404">Pojazd nie został znaleziony</response>
-    /// <response code="500">Błąd serwera</response>
+    /// <param name="id">Vehicle ID</param>
+    /// <returns>Detailed vehicle information including compartments and equipment</returns>
+    /// <response code="200">Returns the vehicle</response>
+    /// <response code="404">Vehicle not found</response>
+    /// <response code="500">Server error</response>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(VehicleDetailsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -87,15 +87,15 @@ public class VehicleController : ControllerBase
     }
 
     /// <summary>
-    /// Tworzy nowy pojazd
+    /// Creates a new vehicle
     /// </summary>
-    /// <param name="dto">Dane nowego pojazdu</param>
-    /// <returns>Utworzony pojazd</returns>
-    /// <response code="201">Pojazd został utworzony pomyślnie</response>
-    /// <response code="400">Nieprawidłowe dane wejściowe</response>
-    /// <response code="500">Błąd serwera</response>
+    /// <param name="dto">New vehicle data</param>
+    /// <returns>Created vehicle</returns>
+    /// <response code="201">Vehicle successfully created</response>
+    /// <response code="400">Invalid input data</response>
+    /// <response code="500">Server error</response>
     /// <remarks>
-    /// Przykładowe żądanie:
+    /// Example request:
     /// 
     ///     POST /api/vehicle
     ///     {
@@ -150,15 +150,15 @@ public class VehicleController : ControllerBase
     }
 
     /// <summary>
-    /// Aktualizuje istniejący pojazd
+    /// Updates an existing vehicle
     /// </summary>
-    /// <param name="id">ID pojazdu do zaktualizowania</param>
-    /// <param name="dto">Zaktualizowane dane pojazdu</param>
-    /// <returns>Zaktualizowany pojazd</returns>
-    /// <response code="200">Pojazd został zaktualizowany</response>
-    /// <response code="400">Nieprawidłowe dane wejściowe</response>
-    /// <response code="404">Pojazd nie został znaleziony</response>
-    /// <response code="500">Błąd serwera</response>
+    /// <param name="id">ID of the vehicle to update</param>
+    /// <param name="dto">Updated vehicle data</param>
+    /// <returns>Updated vehicle</returns>
+    /// <response code="200">Vehicle successfully updated</response>
+    /// <response code="400">Invalid input data</response>
+    /// <response code="404">Vehicle not found</response>
+    /// <response code="500">Server error</response>
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(VehicleResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -203,16 +203,16 @@ public class VehicleController : ControllerBase
     }
 
     /// <summary>
-    /// Usuwa pojazd
+    /// Deletes a vehicle
     /// </summary>
-    /// <param name="id">ID pojazdu do usunięcia</param>
-    /// <returns>Brak zawartości</returns>
-    /// <response code="204">Pojazd został usunięty</response>
-    /// <response code="404">Pojazd nie został znaleziony</response>
-    /// <response code="500">Błąd serwera</response>
+    /// <param name="id">ID of the vehicle to delete</param>
+    /// <returns>No content</returns>
+    /// <response code="204">Vehicle successfully deleted</response>
+    /// <response code="404">Vehicle not found</response>
+    /// <response code="500">Server error</response>
     /// <remarks>
-    /// UWAGA: Usunięcie pojazdu spowoduje również usunięcie wszystkich powiązanych 
-    /// przedziałów i wyposażenia (cascade delete).
+    /// WARNING: Deleting a vehicle will also delete all related
+    /// compartments and equipment (cascade delete).
     /// </remarks>
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -237,58 +237,6 @@ public class VehicleController : ControllerBase
         {
             _logger.LogError(ex, "Error deleting vehicle {VehicleId}", id);
             return StatusCode(500, new { message = "Błąd podczas usuwania pojazdu" });
-        }
-    }
-
-    /// <summary>
-    /// Wyszukuje pojazdy po nazwie lub kryptonimie
-    /// </summary>
-    /// <param name="query">Termin wyszukiwania</param>
-    /// <returns>Lista pasujących pojazdów</returns>
-    /// <response code="200">Zwraca pasujące pojazdy</response>
-    /// <response code="400">Pusty termin wyszukiwania</response>
-    [HttpGet("search")]
-    [ProducesResponseType(typeof(List<VehicleResponseDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<List<VehicleResponseDto>>> Search([FromQuery] string query)
-    {
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            return BadRequest(new { message = "Termin wyszukiwania nie może być pusty" });
-        }
-
-        try
-        {
-            var vehicles = await _service.SearchVehiclesAsync(query);
-            _logger.LogInformation("Search for '{Query}' returned {Count} results",
-                query, vehicles.Count);
-            return Ok(vehicles);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error searching vehicles");
-            return StatusCode(500, new { message = "Błąd podczas wyszukiwania" });
-        }
-    }
-
-    /// <summary>
-    /// Pobiera statystyki floty pojazdów
-    /// </summary>
-    /// <returns>Obiekt ze statystykami</returns>
-    /// <response code="200">Zwraca statystyki</response>
-    [HttpGet("stats")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetStatistics()
-    {
-        try
-        {
-            var stats = await _service.GetVehicleStatisticsAsync();
-            return Ok(stats);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting vehicle statistics");
-            return StatusCode(500, new { message = "Błąd podczas pobierania statystyk" });
         }
     }
 }
