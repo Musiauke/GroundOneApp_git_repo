@@ -1,9 +1,0 @@
-Data Layer
-
-	•	DbContext (Database Context) → Represents a session with the database. Tracks entities, manages querying and saving data.
-
-	•	Configuration → Settings for the DbContext, like connection strings, table mappings, relationships, etc.
-
-	•	Migrations → Files that define changes to the database schema over time (created by EF Core).
-
-	•	DatabaseSeeder → A class that populates the database with initial or sample data, useful for development and testing.

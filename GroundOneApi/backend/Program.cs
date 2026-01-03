@@ -96,8 +96,7 @@ builder.Services.AddSwaggerGen(options =>
                       "przedziałami i wyposażeniem",
         Contact = new OpenApiContact
         {
-            Name = "Andrzej Musiałek",
-            Email = "a.musialke@example.com",
+            Name = "Musiauke",
             Url = new Uri("https://github.com/yourusername/groundone")
         },
         License = new OpenApiLicense

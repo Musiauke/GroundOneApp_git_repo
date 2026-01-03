@@ -15,19 +15,17 @@ namespace backend.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Kaskadowe usuwanie - usuń Vehicle → usuwa też Compartments
             modelBuilder.Entity<Vehicle>()
                 .HasMany(v => v.Compartments)
                 .WithOne(c => c.Vehicle)
                 .HasForeignKey(c => c.VehicleId)
-                .OnDelete(DeleteBehavior.Cascade);  // added
+                .OnDelete(DeleteBehavior.Cascade);  
 
-            // Podobnie dla Compartment → Items
             modelBuilder.Entity<Compartment>()
                 .HasMany(c => c.Items)
                 .WithOne(i => i.Compartment)
                 .HasForeignKey(i => i.CompartmentId)
-                .OnDelete(DeleteBehavior.Cascade);  // added    
+                .OnDelete(DeleteBehavior.Cascade);      
         }
     }
 }
