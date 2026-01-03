@@ -14,7 +14,38 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Database confinguration
 // ==================================================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=app.db"; // Fallback dla development
+    ?? "Data Source=app.db"; // Fallback for development
+
+// ==================================================
+// automatic conversion RAILWAY DATABASE_URL
+// ==================================================
+if (builder.Environment.IsProduction() && !string.IsNullOrEmpty(connectionString))
+{
+    // Railway daje format: postgres://user:password@host:port/database
+    // Npgsql potrzebuje: Host=...;Port=...;Database=...
+    if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+    {
+        try
+        {
+            // Zamień postgres:// na postgresql:// dla Uri parser
+            var uriString = connectionString.Replace("postgres://", "postgresql://");
+            var databaseUri = new Uri(uriString);
+            var userInfo = databaseUri.UserInfo.Split(':');
+
+            connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+
+            Console.WriteLine($"✅ Converted Railway DATABASE_URL to Npgsql format");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error parsing connection string: {ex.Message}");
+            throw;
+        }
+    }
+}
+
+// DEBUG - log connection string (remove in production later)
+Console.WriteLine($"🔍 Connection String (first 50 chars): {(connectionString?.Length > 50 ? connectionString.Substring(0, 50) + "..." : connectionString ?? "NULL")}");
 
 // determining database provider based on environment
 if (builder.Environment.IsProduction())
@@ -29,6 +60,7 @@ else
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlite(connectionString));
 }
+
 
 // ==================================================
 // 2. DEPENDENCY INJECTION
