@@ -7,28 +7,30 @@ using backend.Middleware;
 using Microsoft.OpenApi.Models;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Diagnostics; 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ==================================================
 // 1. Database confinguration
 // ==================================================
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=app.db"; // Fallback for development
+// Railway używa DATABASE_URL, lokalnie używamy DefaultConnection
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Data Source=app.db";
 
 // ==================================================
 // automatic conversion RAILWAY DATABASE_URL
 // ==================================================
 if (builder.Environment.IsProduction() && !string.IsNullOrEmpty(connectionString))
 {
-    // Railway daje format: postgres://user:password@host:port/database
-    // Npgsql potrzebuje: Host=...;Port=...;Database=...
+    // Railway gives format: postgres://user:password@host:port/database
+    // Npgsql needs: Host=...;Port=...;Database=...
     if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
     {
         try
         {
-            // Zamień postgres:// na postgresql:// dla Uri parser
+            // change postgres:// to postgresql:// for Uri parser
             var uriString = connectionString.Replace("postgres://", "postgresql://");
             var databaseUri = new Uri(uriString);
             var userInfo = databaseUri.UserInfo.Split(':');
