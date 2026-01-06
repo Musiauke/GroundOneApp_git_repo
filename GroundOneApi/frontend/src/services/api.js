@@ -1,15 +1,17 @@
 import { API_BASE_URL } from '../config/constants';
 
 export const api = {
-    // Vehicles
+    // ============================================
+    // VEHICLES (plural: /api/vehicles)
+    // ============================================
     getVehicles: async () => {
-        const response = await fetch(`${API_BASE_URL}/api/vehicle`);
+        const response = await fetch(`${API_BASE_URL}/api/vehicles`);
         if (!response.ok) throw new Error('Failed to fetch vehicles');
         return response.json();
     },
 
     createVehicle: async (data) => {
-        const response = await fetch(`${API_BASE_URL}/api/vehicle`, {
+        const response = await fetch(`${API_BASE_URL}/api/vehicles`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -19,7 +21,7 @@ export const api = {
     },
 
     updateVehicle: async (id, data) => {
-        const response = await fetch(`${API_BASE_URL}/api/vehicle/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/vehicles/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -29,35 +31,62 @@ export const api = {
     },
 
     deleteVehicle: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/api/vehicle/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/vehicles/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to delete vehicle');
     },
 
-    // Items
+    // ============================================
+    // ITEMS (plural: /api/items)
+    // ============================================
     getItems: async () => {
-        const response = await fetch(`${API_BASE_URL}/api/item`);
+        const response = await fetch(`${API_BASE_URL}/api/items`);
         if (!response.ok) throw new Error('Failed to fetch items');
         return response.json();
     },
 
+    createItem: async (data) => {
+        const response = await fetch(`${API_BASE_URL}/api/items`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to create item');
+        return response.json();
+    },
+
+    updateItem: async (id, data) => {
+        const response = await fetch(`${API_BASE_URL}/api/items/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) throw new Error('Failed to update item');
+        return response.json();
+    },
+
     deleteItem: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/api/item/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/items/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to delete item');
     },
 
-    // Compartments
+    // ============================================
+    // COMPARTMENTS (plural: /api/compartments)
+    // ============================================
     getCompartments: async (vehicleId) => {
-        const response = await fetch(`${API_BASE_URL}/api/compartment?vehicleId=${vehicleId}`);
+        const url = vehicleId
+            ? `${API_BASE_URL}/api/compartments?vehicleId=${vehicleId}`
+            : `${API_BASE_URL}/api/compartments`;
+        const response = await fetch(url);
         if (!response.ok) throw new Error('Failed to fetch compartments');
         return response.json();
     },
 
     createCompartment: async (data) => {
-        const response = await fetch(`${API_BASE_URL}/api/compartment`, {
+        const response = await fetch(`${API_BASE_URL}/api/compartments`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -67,7 +96,7 @@ export const api = {
     },
 
     updateCompartment: async (id, data) => {
-        const response = await fetch(`${API_BASE_URL}/api/compartment/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/compartments/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -77,7 +106,7 @@ export const api = {
     },
 
     deleteCompartment: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/api/compartment/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/compartments/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) throw new Error('Failed to delete compartment');
