@@ -1,9 +1,7 @@
 import { API_BASE_URL } from '../config/constants';
 
 export const api = {
-    // ============================================
-    // VEHICLES - /api/vehicles (PLURAL!)
-    // ============================================
+    // VEHICLES
     getVehicles: async () => {
         const response = await fetch(`${API_BASE_URL}/api/vehicles`);
         if (!response.ok) throw new Error('Failed to fetch vehicles');
@@ -37,9 +35,7 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete vehicle');
     },
 
-    // ============================================
-    // ITEMS - /api/items (PLURAL!)
-    // ============================================
+    // ITEMS
     getItems: async () => {
         const response = await fetch(`${API_BASE_URL}/api/items`);
         if (!response.ok) throw new Error('Failed to fetch items');
@@ -73,9 +69,7 @@ export const api = {
         if (!response.ok) throw new Error('Failed to delete item');
     },
 
-    // ============================================
-    // COMPARTMENTS - /api/compartments (PLURAL!)
-    // ============================================
+    // COMPARTMENTS
     getCompartments: async (vehicleId) => {
         const url = vehicleId
             ? `${API_BASE_URL}/api/compartments?vehicleId=${vehicleId}`
@@ -98,17 +92,4 @@ export const api = {
     updateCompartment: async (id, data) => {
         const response = await fetch(`${API_BASE_URL}/api/compartments/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-        if (!response.ok) throw new Error('Failed to update compartment');
-        return response.json();
-    },
-
-    deleteCompartment: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/api/compartments/${id}`, {
-            method: 'DELETE',
-        });
-        if (!response.ok) throw new Error('Failed to delete compartment');
-    },
-};
+            headers: { 'Content-Type': 'ap

@@ -1,6 +1,6 @@
 export const DRAWER_WIDTH = 260;
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5049/api';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5049';
 
 export const MENU_ITEMS = [
     { text: 'Panel główny', icon: 'Dashboard', view: 'dashboard' },
