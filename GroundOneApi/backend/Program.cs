@@ -14,57 +14,47 @@ var builder = WebApplication.CreateBuilder(args);
 // ==================================================
 // 1. Database confinguration
 // ==================================================
-// Railway używa DATABASE_URL, lokalnie używamy DefaultConnection
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=app.db";
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
 
-// ==================================================
-// automatic conversion RAILWAY DATABASE_URL
-// ==================================================
-if (builder.Environment.IsProduction() && !string.IsNullOrEmpty(connectionString))
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // Railway gives format: postgres://user:password@host:port/database
-    // Npgsql needs: Host=...;Port=...;Database=...
-    if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
-    {
-        try
-        {
-            // change postgres:// to postgresql:// for Uri parser
-            var uriString = connectionString.Replace("postgres://", "postgresql://");
-            var databaseUri = new Uri(uriString);
-            var userInfo = databaseUri.UserInfo.Split(':');
+    var uri = new Uri(databaseUrl.Replace("postgres://", "postgresql://"));
+    var userInfo = uri.UserInfo.Split(':');
 
-            connectionString = $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    connectionString =
+        $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
 
-            Console.WriteLine($"✅ Converted Railway DATABASE_URL to Npgsql format");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Error parsing connection string: {ex.Message}");
-            throw;
-        }
-    }
-}
-
-// DEBUG - log connection string (remove in production later)
-Console.WriteLine($"🔍 Connection String (first 50 chars): {(connectionString?.Length > 50 ? connectionString.Substring(0, 50) + "..." : connectionString ?? "NULL")}");
-
-// determining database provider based on environment
-if (builder.Environment.IsProduction())
-{
-    // PostgreSQL for Railway (*)
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(connectionString)
-               .ConfigureWarnings(warnings =>
-                   warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
+    Console.WriteLine("✅ Using PostgreSQL (Railway)");
 }
 else
 {
-    // SQLite for development
+    connectionString =
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? "Data Source=app.db";
+
+    Console.WriteLine("⚠️ Using SQLite (local)");
+}
+
+
+//// DEBUG - log connection string (remove in production later)
+//Console.WriteLine($"🔍 Connection String (first 50 chars): {(connectionString?.Length > 50 ? connectionString.Substring(0, 50) + "..." : connectionString ?? "NULL")}");
+
+// determining database provider based on environment
+if (!string.IsNullOrEmpty(databaseUrl))
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(connectionString)
+               .ConfigureWarnings(warnings =>
+                   warnings.Ignore(RelationalEventId.PendingModelChangesWarning)));
+}
+else
+{
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlite(connectionString));
 }
+
 
 
 // ==================================================
@@ -209,52 +199,84 @@ app.MapGet("/health", () => Results.Ok(new
 }));
 
 // ==================================================
-// 8. DATABASE INITIALIZATION
+// 8. DATABASE INITIALIZATION WITH RETRY
 // ==================================================
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var logger = services.GetRequiredService<ILogger<Program>>();
-    
-    try
+
+    // Retry configuration
+    const int maxRetries = 5;
+    const int delayMs = 2000;
+
+    for (int attempt = 1; attempt <= maxRetries; attempt++)
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        
-        // Development: EnsureCreated
-        // Production: use migrations
-        if (app.Environment.IsDevelopment())
+        try
         {
-            context.Database.EnsureCreated();
-            logger.LogInformation("Database ensured created (Development)");
-        }
-        else
-        {
-            // Production: Apply pending migrations
-            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-            if (pendingMigrations.Any())
+            var context = services.GetRequiredService<AppDbContext>();
+
+            // Test connection
+            context.Database.CanConnect();
+            logger.LogInformation("Database connection established");
+
+            if (app.Environment.IsDevelopment())
             {
-                logger.LogInformation("Applying {Count} pending migrations", 
-                    pendingMigrations.Count());
-                await context.Database.MigrateAsync();
-                logger.LogInformation("Migrations applied successfully");
+                // Development: EnsureCreated + Seed
+                context.Database.EnsureCreated();
+                logger.LogInformation("Database ensured created (Development)");
+
+                DatabaseSeeder.SeedData(context);
+                logger.LogInformation("Database seeded successfully");
             }
+            else
+            {
+                // Production: Apply migrations
+                var pendingMigrations = context.Database
+                    .GetPendingMigrationsAsync()
+                    .GetAwaiter()
+                    .GetResult();
+
+                if (pendingMigrations.Any())
+                {
+                    logger.LogInformation("Applying {Count} pending migrations",
+                        pendingMigrations.Count());
+                    context.Database.MigrateAsync().GetAwaiter().GetResult();
+                    logger.LogInformation("✅ Migrations applied successfully");
+                }
+                else
+                {
+                    logger.LogInformation("No pending migrations");
+                }
+            }
+
+            // Success - break the retry loop
+            break;
         }
-        
-        // Seed data only in development (*)
-        if (app.Environment.IsDevelopment())
+        catch (Exception ex)
         {
-            DatabaseSeeder.SeedData(context);
-            logger.LogInformation("Database seeded successfully");
-        }
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "An error occurred while initializing the database");
-        
-        // in production rethrow to stop the app
-        if (app.Environment.IsDevelopment())
-        {
-            throw;
+            if (attempt == maxRetries)
+            {
+                logger.LogError(ex,
+                    "❌ Database initialization failed after {Attempts} attempts",
+                    maxRetries);
+
+                // In development: crash immediately
+                if (app.Environment.IsDevelopment())
+                {
+                    throw;
+                }
+
+                // In production: log and continue (app will work without DB initially)
+                logger.LogWarning("⚠️ Application starting without database connection");
+            }
+            else
+            {
+                logger.LogWarning(ex,
+                    "Database initialization failed (attempt {Attempt}/{Max}). Retrying in {Delay}ms...",
+                    attempt, maxRetries, delayMs);
+                Thread.Sleep(delayMs);
+            }
         }
     }
 }
