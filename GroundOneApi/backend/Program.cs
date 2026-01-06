@@ -178,11 +178,11 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // HTTPS Redirection
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-    app.UseHsts();
-}
+//if (!app.Environment.IsDevelopment())
+//{
+//    app.UseHttpsRedirection();
+//    app.UseHsts();
+//}
 
 // CORS - before Authorization
 app.UseCors("AllowFrontend");
@@ -287,11 +287,9 @@ using (var scope = app.Services.CreateScope())
 // ==================================================
 // 9. Start the app
 // ==================================================
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Logger.LogInformation("Starting GroundOne API on port {Port}", port);
 app.Logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
 
 app.Run();
 
-// partial public class for integration tests
-public partial class Program { }
