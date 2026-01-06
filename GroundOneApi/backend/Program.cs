@@ -287,7 +287,6 @@ using (var scope = app.Services.CreateScope())
 // ==================================================
 // 9. Start the app
 // ==================================================
-port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
 app.Logger.LogInformation("Starting GroundOne API on port {Port}", port);
 app.Logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
 
