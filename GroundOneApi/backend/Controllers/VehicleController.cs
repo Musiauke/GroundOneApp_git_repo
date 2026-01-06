@@ -7,7 +7,7 @@ namespace backend.Controllers;
 
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/vehicles")]
 [Produces("application/json")]
 public class VehicleController : ControllerBase
 {

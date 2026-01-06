@@ -5,7 +5,7 @@ using backend.Services;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/compartments")]
     public class CompartmentController : ControllerBase
     {
         private readonly ICompartmentService _service;
