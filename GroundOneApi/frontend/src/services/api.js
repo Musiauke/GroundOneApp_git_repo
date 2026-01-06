@@ -2,7 +2,7 @@ import { API_BASE_URL } from '../config/constants';
 
 export const api = {
     // ============================================
-    // VEHICLES (plural: /api/vehicles)
+    // VEHICLES - /api/vehicles (PLURAL!)
     // ============================================
     getVehicles: async () => {
         const response = await fetch(`${API_BASE_URL}/api/vehicles`);
@@ -38,7 +38,7 @@ export const api = {
     },
 
     // ============================================
-    // ITEMS (plural: /api/items)
+    // ITEMS - /api/items (PLURAL!)
     // ============================================
     getItems: async () => {
         const response = await fetch(`${API_BASE_URL}/api/items`);
@@ -74,7 +74,7 @@ export const api = {
     },
 
     // ============================================
-    // COMPARTMENTS (plural: /api/compartments)
+    // COMPARTMENTS - /api/compartments (PLURAL!)
     // ============================================
     getCompartments: async (vehicleId) => {
         const url = vehicleId
